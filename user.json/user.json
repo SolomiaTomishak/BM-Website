@@ -1,0 +1,17 @@
+[
+    {
+        "id": "u1",
+        "name": "Ім`я користувача",
+        "email": "email@example.com",
+        "password": "пароль",
+        "role": "admin"
+    },
+    {
+        "id": "u2",
+        "name": "Ім`я користувача",
+        "email": "email@example.com",
+        "password": "пароль",
+        "role": "user"
+        
+    }
+]

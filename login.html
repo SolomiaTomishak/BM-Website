@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Вхід</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .login-card { max-width: 300px; margin: 100px auto; padding: 20px; border: 1px solid #3636a0; border-radius: 8px; text-align: center; }
+        .login-card input { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; }
+        .login-card button { width: 100%; padding: 10px; background: #3636a0; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <header id="main-header"></header>
+    <div class="login-card">
+        <h2>Вхід</h2>
+        <form id="loginForm">
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Пароль" required>
+            <p id="errorMsg" style="color: red; display: none;"></p>
+            <button type="submit">Увійти</button>
+        </form>
+    </div>
+    <script src="common.js"></script>
+    <script src="auth.js"></script>
+</body>
+</html>

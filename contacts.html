@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Контакти - Березівська молодь</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .contact-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .contact-container h2 {
+            color: #3636a0;
+            text-align: center;
+        }
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+        }
+        .contact-form input, .contact-form textarea {
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-family: inherit;
+        }
+        .contact-form button {
+            padding: 12px;
+            background-color: #3636a0;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        .contact-form button:hover {
+            background-color: #2a2a80;
+        }
+        #form-status {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<header id="main-header"></header>
+
+<div class="contact-container">
+    <h2>Зв'яжіться з нами</h2>
+    <form id="contactForm" class="contact-form">
+        <input type="text" id="name" placeholder="Ваше ім'я" required>
+        <input type="email" id="email" placeholder="Ваш Email" required>
+        <textarea id="message" rows="5" placeholder="Ваше повідомлення..." required></textarea>
+        <button type="submit">Надіслати повідомлення</button>
+    </form>
+    <div id="form-status"></div>
+</div>
+
+<script src="common.js"></script>
+<script>
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const newMessage = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            message: document.getElementById('message').value,
+            date: new Date().toLocaleString()
+        };
+
+        // Отримуємо існуючі повідомлення з localStorage
+        let messages = JSON.parse(localStorage.getItem('contactMessages')) || [];
+        
+        // Додаємо нове
+        messages.push(newMessage);
+        
+        // Зберігаємо назад у localStorage
+        localStorage.setItem('contactMessages', JSON.stringify(messages));
+
+        // Показуємо статус та очищуємо форму
+        const status = document.getElementById('form-status');
+        status.style.color = "green";
+        status.innerText = "Дякуємо! Ваше повідомлення збережено.";
+        
+        this.reset();
+    });
+</script>
+
+</body>
+</html>

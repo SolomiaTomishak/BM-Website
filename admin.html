@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель адміністратора - Березівська молодь</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .admin-main { padding: 20px; max-width: 800px; margin: 0 auto; }
+        .message-card {
+            background: #fff;
+            border-left: 5px solid #3636a0;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .message-card h3 { margin: 0 0 10px 0; color: #3636a0; }
+        .message-card p { margin: 5px 0; }
+        .delete-btn {
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            float: right;
+        }
+    </style>
+</head>
+<body>
+
+<header id="main-header"></header>
+
+<div class="admin-main">
+    <h1>Керування повідомленнями</h1>
+    <div id="messagesList"></div>
+</div>
+
+<script src="common.js"></script>
+<script>
+    // 1. Перевірка на адміна (Етап 2)
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    if (!user || user.role !== 'admin') {
+        window.location.href = 'index.html';
+    }
+
+    // 2. Виведення повідомлень з Контактів (Етап 3)
+    function renderMessages() {
+        const container = document.getElementById('messagesList');
+        const messages = JSON.parse(localStorage.getItem('contactMessages')) || [];
+
+        if (messages.length === 0) {
+            container.innerHTML = "<p>Повідомлень поки немає.</p>";
+            return;
+        }
+
+        container.innerHTML = ""; 
+        messages.forEach((msg, index) => {
+            const card = `
+                <div class="message-card">
+                    <button class="delete-btn" onclick="deleteMsg(${index})">Видалити</button>
+                    <h3>${msg.name}</h3>
+                    <p><strong>Email:</strong> ${msg.email}</p>
+                    <p><strong>Дата:</strong> ${msg.date}</p>
+                    <p><strong>Повідомлення:</strong> ${msg.message}</p>
+                </div>
+            `;
+            container.innerHTML += card;
+        });
+    }
+
+    function deleteMsg(index) {
+        let messages = JSON.parse(localStorage.getItem('contactMessages')) || [];
+        messages.splice(index, 1);
+        localStorage.setItem('contactMessages', JSON.stringify(messages));
+        renderMessages();
+    }
+
+    document.addEventListener('DOMContentLoaded', renderMessages);
+</script>
+
+</body>
+</html>
