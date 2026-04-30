@@ -4,20 +4,20 @@
         "title": "Жучок БМ",
         "description": "Цей дрон - це наша перша покупка для ЗСУ",
         "category": "Наша діяльність",
-        "image": "./assets/post1.jpg"
+        "image": "https://scontent-waw2-2.xx.fbcdn.net/v/t39.30808-6/663360042_1400905138747356_7668864469627312106_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=7b2446&_nc_ohc=iY8ePYvh40AQ7kNvwG71Iga&_nc_oc=Adp3VoENoj9Q_apHBaIGK8ZiApgcK1ccnUJN4BASvduC25Al-3JtlKWvSgsDEmPTaPY&_nc_zt=23&_nc_ht=scontent-waw2-2.xx&_nc_gid=7c6nUG2nEku3dOvNtxhP4w&oh=00_Af34XreD-6IJOnQ7LUt30LG7RBnIy_JO0bKV8YUkKHP-Tw&oe=69EF99A4"
     },
     {
         "id": 2,
         "title": "Пікап",
         "description": "Ми довго до цього йшли та нарешті зробили",
         "category": "Наша діяльність",
-        "image": "./assets/post2.jpg"
+        "image": "https://scontent-waw2-2.xx.fbcdn.net/v/t39.30808-6/666802436_1400904945414042_6117380266523604670_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=7b2446&_nc_ohc=UN4n5oZz8aMQ7kNvwFT2dvW&_nc_oc=Adqw1MzYYf5_D3IS7NbGibaSCcP98eA41IqGTbl-WaMAq8XtfN2n2aQJE7i46KETlMQ&_nc_zt=23&_nc_ht=scontent-waw2-2.xx&_nc_gid=xCs0vZPLI21gm8x0NMrNmg&oh=00_Af2E5NJQnsq0tf1lvkZhifYFZLd9Sog3xlDDs6eb-19qAA&oe=69EFB647"
     },
     {
         "id": 3,
         "title": "Червона рута",
         "description": "За 40 днів ми придбали другий автомобіль для наших захисників",
         "category": "Наша діяльність",
-        "image": "./assets/post3.jpg"
+        "image": "https://mega.if.ua/wp-content/uploads/2026/02/img_1770.jpeg"
     }
 ]

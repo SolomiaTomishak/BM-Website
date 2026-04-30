@@ -1,3 +1,6 @@
+const SUPABASE_URL = 'https://mgjtvqqsrcrmouffuijo.supabase.co/rest/v1/'; 
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1nanR2cXFzcmNybW91ZmZ1aWpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2NzQyMzAsImV4cCI6MjA5MjI1MDIzMH0.z173ECMcwPDZEP5fNVlvdm-B1v1SgXawa2o4koAoQqk';
+const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 function renderHeader() {
     const header = document.getElementById('main-header');
     const user = JSON.parse(localStorage.getItem('currentUser'));

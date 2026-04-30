@@ -1,0 +1,24 @@
+{
+  "name": "bm-website",
+  "version": "1.0.0",
+  "description": "to do: \r 1. Завантажити те що є на гіт хаб\r 2. Сторінка для звіти і публікації\r 3. Вивести на цій сторінці наш джсон масив з публікаціями\r 4. Зробити функціонал вх вих. Зберігати стан в локалсторейдж(localStorage)\r 5. Перевірка на адміна. Потім адмін може робити все. Сторінка для адміна.\r 6. Пошук по постах(фільтри). \r 7. Сторінка контактів. Вивести в адмін сторінці. \r кожен пункт окремий коміт і на гіт хаб.",
+  "main": "admin.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SolomiaTomishak/BM-Website.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/SolomiaTomishak/BM-Website/issues"
+  },
+  "homepage": "https://github.com/SolomiaTomishak/BM-Website#readme",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.105.1"
+  }
+}

@@ -26,6 +26,30 @@
             cursor: pointer;
             float: right;
         }
+        .post-form-section {
+            margin-bottom: 40px;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 20px;
+        }
+        .post-form-section form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 400px;
+        }
+        .post-form-section input, .post-form-section textarea {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .submit-btn {
+            background: #28a745;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -33,52 +57,24 @@
 <header id="main-header"></header>
 
 <div class="admin-main">
-    <h1>Керування повідомленнями</h1>
+    <h1>Панель адміністратора</h1>
+
+    <section class="post-form-section">
+        <h2>Додати новий звіт</h2>
+        <form id="addPostForm">
+            <input type="text" id="postTitle" placeholder="Назва звіту" required>
+            <input type="text" id="postCategory" placeholder="Категорія" required>
+            <textarea id="postDesc" placeholder="Опис" rows="3" required></textarea>
+            <input type="text" id="postImage" placeholder="Шлях до фото (напр. ./assets/post1.jpg)" required>
+            <button type="submit" class="submit-btn">Опублікувати</button>
+        </form>
+    </section>
+
     <div id="messagesList"></div>
 </div>
 
-<script src="common.js"></script>
-<script>
-    // 1. Перевірка на адміна (Етап 2)
-    const user = JSON.parse(localStorage.getItem('currentUser'));
-    if (!user || user.role !== 'admin') {
-        window.location.href = 'index.html';
-    }
-
-    // 2. Виведення повідомлень з Контактів (Етап 3)
-    function renderMessages() {
-        const container = document.getElementById('messagesList');
-        const messages = JSON.parse(localStorage.getItem('contactMessages')) || [];
-
-        if (messages.length === 0) {
-            container.innerHTML = "<p>Повідомлень поки немає.</p>";
-            return;
-        }
-
-        container.innerHTML = ""; 
-        messages.forEach((msg, index) => {
-            const card = `
-                <div class="message-card">
-                    <button class="delete-btn" onclick="deleteMsg(${index})">Видалити</button>
-                    <h3>${msg.name}</h3>
-                    <p><strong>Email:</strong> ${msg.email}</p>
-                    <p><strong>Дата:</strong> ${msg.date}</p>
-                    <p><strong>Повідомлення:</strong> ${msg.message}</p>
-                </div>
-            `;
-            container.innerHTML += card;
-        });
-    }
-
-    function deleteMsg(index) {
-        let messages = JSON.parse(localStorage.getItem('contactMessages')) || [];
-        messages.splice(index, 1);
-        localStorage.setItem('contactMessages', JSON.stringify(messages));
-        renderMessages();
-    }
-
-    document.addEventListener('DOMContentLoaded', renderMessages);
-</script>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="common.js"></script>
+    <script src="admin.js"></script>
 </body>
 </html>
