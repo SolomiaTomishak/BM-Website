@@ -1,80 +1,201 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="uk">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Панель адміністратора - Березівська молодь</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css" />
     <style>
-        .admin-main { padding: 20px; max-width: 800px; margin: 0 auto; }
-        .message-card {
-            background: #fff;
-            border-left: 5px solid #3636a0;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            position: relative;
-        }
-        .message-card h3 { margin: 0 0 10px 0; color: #3636a0; }
-        .message-card p { margin: 5px 0; }
-        .delete-btn {
-            background: #ff4d4d;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 3px;
-            cursor: pointer;
-            float: right;
-        }
-        .post-form-section {
-            margin-bottom: 40px;
-            border-bottom: 2px solid #ccc;
-            padding-bottom: 20px;
-        }
-        .post-form-section form {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            max-width: 400px;
-        }
-        .post-form-section input, .post-form-section textarea {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        .submit-btn {
-            background: #28a745;
-            color: white;
-            padding: 10px;
-            border: none;
-            cursor: pointer;
-            border-radius: 4px;
-        }
+      .admin-main {
+        padding: 20px;
+        max-width: 900px;
+        margin: 0 auto;
+        font-family: Arial, sans-serif;
+      }
+      .post-form-section {
+        background: #f9f9f9;
+        padding: 25px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        border: 1px solid #ddd;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      }
+      .post-form-section h2 {
+        color: #3636a0;
+        margin-top: 0;
+      }
+      .post-form-section form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+      .post-form-section input,
+      .post-form-section textarea {
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 14px;
+      }
+      .file-label {
+        font-weight: bold;
+        margin-bottom: -10px;
+        color: #555;
+      }
+      .submit-btn {
+        background: #28a745;
+        color: white;
+        padding: 12px;
+        border: none;
+        cursor: pointer;
+        border-radius: 6px;
+        font-weight: bold;
+        font-size: 16px;
+        transition: background 0.3s;
+      }
+      .submit-btn:hover {
+        background: #218838;
+      }
+      .submit-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+
+      .admin-post-card {
+        background: #fff;
+        border: 1px solid #eee;
+        padding: 15px;
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      }
+      .admin-post-info h4 {
+        margin: 0;
+        color: #3636a0;
+        font-size: 18px;
+      }
+      .admin-actions {
+        display: flex;
+        gap: 10px;
+      }
+      .edit-btn {
+        background: #ffc107;
+        border: none;
+        padding: 8px 15px;
+        cursor: pointer;
+        border-radius: 4px;
+        font-weight: bold;
+      }
+      .delete-btn {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        cursor: pointer;
+        border-radius: 4px;
+        font-weight: bold;
+      }
+
+      #editModal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+      }
+      .modal-content {
+        background: white;
+        margin: 5% auto;
+        padding: 30px;
+        width: 50%;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
+    <header id="main-header"></header>
 
-<header id="main-header"></header>
+    <div class="admin-main">
+      <h1>Панель адміністратора</h1>
 
-<div class="admin-main">
-    <h1>Панель адміністратора</h1>
-
-    <section class="post-form-section">
+      <section class="post-form-section">
         <h2>Додати новий звіт</h2>
         <form id="addPostForm">
-            <input type="text" id="postTitle" placeholder="Назва звіту" required>
-            <input type="text" id="postCategory" placeholder="Категорія" required>
-            <textarea id="postDesc" placeholder="Опис" rows="3" required></textarea>
-            <input type="text" id="postImage" placeholder="Шлях до фото (напр. ./assets/post1.jpg)" required>
-            <button type="submit" class="submit-btn">Опублікувати</button>
+          <input
+            type="text"
+            id="postTitle"
+            placeholder="Назва звіту"
+            required
+          />
+          <input
+            type="text"
+            id="postCategory"
+            placeholder="Категорія (напр. Волонтерство)"
+            required
+          />
+          <textarea
+            id="postDesc"
+            placeholder="Опис проєкту або новини..."
+            rows="4"
+            required
+          ></textarea>
+
+          <label class="file-label" for="postFile"
+            >Завантажити фото з галереї:</label
+          >
+          <input type="file" id="postFile" accept="image/*" required />
+
+          <button type="submit" class="submit-btn" id="submitBtn">
+            Опублікувати
+          </button>
         </form>
-    </section>
+      </section>
 
-    <div id="messagesList"></div>
-</div>
+      <div id="adminPostsList"></div>
+    </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <div id="editModal">
+      <div class="modal-content">
+        <h3>Редагування запису</h3>
+        <form id="editPostForm">
+          <input type="hidden" id="editPostId" />
+          <input type="text" id="editTitle" placeholder="Назва" required />
+          <input
+            type="text"
+            id="editCategory"
+            placeholder="Категорія"
+            required
+          />
+          <textarea
+            id="editDesc"
+            rows="5"
+            placeholder="Опис"
+            required
+          ></textarea>
+          <p>
+            <small>Фото залишається без змін при редагуванні тексту.</small>
+          </p>
+          <button type="submit" class="submit-btn">Зберегти зміни</button>
+          <button
+            type="button"
+            onclick="closeModal()"
+            style="background: #6c757d"
+            class="submit-btn"
+          >
+            Скасувати
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="common.js"></script>
     <script src="admin.js"></script>
-</body>
+  </body>
 </html>

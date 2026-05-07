@@ -1,17 +1,17 @@
 [
-    {
-        "id": 1,
-        "description": "Оголошення 1",
-        "image": ""
-    },
-    {
-        "id": 2,
-        "description": "Оголошення 2",
-        "image": ""
-    },
-    {
-        "id": 3,
-        "description": "Оголошення 3",
-        "image": ""
-    }
+  {
+    "id": 1,
+    "description": "Оголошення 1",
+    "image": ""
+  },
+  {
+    "id": 2,
+    "description": "Оголошення 2",
+    "image": ""
+  },
+  {
+    "id": 3,
+    "description": "Оголошення 3",
+    "image": ""
+  }
 ]

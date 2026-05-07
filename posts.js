@@ -1,51 +1,67 @@
-const defaultPosts = [
-    { "id": 1, "title": "Жучок БМ", "description": "Цей дрон - це наша перша покупка для ЗСУ", "category": "Наша діяльність", "image": "./assets/post1.jpg" },
-    { "id": 2, "title": "Пікап", "description": "Ми довго до цього йшли та нарешті зробили", "category": "Наша діяльність", "image": "./assets/post2.jpg" },
-    { "id": 3, "title": "Червона рута", "description": "За 40 днів ми придбали другий автомобіль для наших захисників", "category": "Наша діяльність", "image": "./assets/post3.jpg" }
-];
+import { createClient } from "@supabase/supabase-js";
+const supabaseUrl = "https://mgjtvqqsrcrmouffuijo.supabase.co";
+const supabaseKey = "sb_publishable_R0I13hnrS3pt2hyG97xA9A_sQzPSsVD";
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-let postsData = JSON.parse(localStorage.getItem('sitePosts')) || defaultPosts;
+document.addEventListener("DOMContentLoaded", () => {
+  loadPostsFromSupabase();
+});
 
-if (!localStorage.getItem('sitePosts')) {
-    localStorage.setItem('sitePosts', JSON.stringify(postsData));
-}
+async function loadPostsFromSupabase() {
+  const container = document.getElementById("postsContainer");
+  if (!container) return;
 
-const container = document.getElementById('postsContainer');
-const searchBar = document.getElementById('searchBar');
+  container.innerHTML = "<p>Завантаження звітів...</p>";
 
-function displayPosts(posts) {
-    if (!container) return;
-    container.innerHTML = ""; 
-    
-    if (posts.length === 0) {
-        container.innerHTML = "<p>Нічого не знайдено :(</p>";
-        return;
+  try {
+    const { data: posts, error } = await supabase
+      .from("posts")
+      .select("*")
+      .order("id", { ascending: false }); // Спочатку нові
+
+    if (error) throw error;
+
+    container.innerHTML = "";
+
+    if (!posts || posts.length === 0) {
+      container.innerHTML = "<p>Наразі публікацій немає.</p>";
+      return;
     }
 
-    posts.forEach(post => {
-        const card = `
-            <div class="post-card">
-                <img src="${post.image}" alt="${post.title}">
+    posts.forEach((post) => {
+      const card = document.createElement("div");
+      card.className = "post-card";
+      card.innerHTML = `
+                <img src="${post.image}" alt="${post.title}" onerror="this.src='./assets/default.jpg'">
                 <div class="post-info">
                     <h3>${post.title}</h3>
                     <p><strong>${post.category}</strong></p>
                     <p>${post.description}</p>
                 </div>
-            </div>
-        `;
-        container.innerHTML += card;
+            `;
+      container.innerHTML += card.outerHTML;
     });
+  } catch (error) {
+    console.error("Помилка Supabase:", error);
+    container.innerHTML = `<p style="color: red;">Не вдалося завантажити дані: ${error.message}</p>`;
+  }
 }
 
-if (container) displayPosts(postsData);
-
+const searchBar = document.getElementById("searchBar");
 if (searchBar) {
-    searchBar.addEventListener('keyup', (e) => {
-        const searchString = e.target.value.toLowerCase();
-        const filteredPosts = postsData.filter(post => {
-            return post.title.toLowerCase().includes(searchString) || 
-                   post.description.toLowerCase().includes(searchString);
-        });
-        displayPosts(filteredPosts);
+  searchBar.addEventListener("input", async (e) => {
+    const query = e.target.value.toLowerCase();
+
+    // Можна фільтрувати вже завантажені дані або робити новий запит (простіший варіант - фільтрація)
+    const cards = document.querySelectorAll(".post-card");
+    cards.forEach((card) => {
+      const title = card.querySelector("h3").innerText.toLowerCase();
+      const category = card.querySelector("strong").innerText.toLowerCase();
+      if (title.includes(query) || category.includes(query)) {
+        card.style.display = "block";
+      } else {
+        card.style.display = "none";
+      }
     });
+  });
 }

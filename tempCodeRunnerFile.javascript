@@ -1,8 +1,8 @@
 localStorage.setItem("theme", "dark");
 
 fetch("users.json")
-  .then(res => res.json())
-  .then(users => {
+  .then((res) => res.json())
+  .then((users) => {
     localStorage.setItem("users", JSON.stringify(users));
   });
 
