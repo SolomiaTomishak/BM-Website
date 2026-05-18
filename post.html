@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Звіт - Березівська молодь</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header id="main-header"></header>
+
+    <main class="single-post-page">
+      <a class="back-link" href="reports.html">Назад до звітів</a>
+
+      <article id="singlePost" class="single-post">
+        <div class="posts-loader" role="status" aria-live="polite">
+          <span class="wheat-loader" aria-hidden="true">🌾</span>
+          <span>Завантажуємо звіт...</span>
+        </div>
+      </article>
+
+      <section class="comments-section" aria-labelledby="commentsTitle">
+        <h2 id="commentsTitle">Коментарі</h2>
+
+        <form id="commentForm" class="comment-form">
+          <textarea
+            id="commentText"
+            rows="4"
+            placeholder="Ваш коментар..."
+            maxlength="1000"
+            required
+          ></textarea>
+          <button type="submit" class="submit-btn">
+            Опублікувати коментар
+          </button>
+          <p id="commentStatus" class="form-note" aria-live="polite"></p>
+        </form>
+
+        <div id="commentsList" class="comments-list">
+          <p class="posts-message">Завантаження коментарів...</p>
+        </div>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="common.js"></script>
+    <script src="post.js"></script>
+  </body>
+</html>

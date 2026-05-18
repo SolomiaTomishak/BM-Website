@@ -150,6 +150,9 @@
             >Завантажити фото з галереї:</label
           >
           <input type="file" id="postFile" accept="image/*" required />
+          <div class="admin-image-preview" id="postImagePreview" hidden>
+            <img src="" alt="Попередній перегляд фото" />
+          </div>
 
           <button type="submit" class="submit-btn" id="submitBtn">
             Опублікувати
@@ -158,6 +161,13 @@
       </section>
 
       <div id="adminPostsList"></div>
+
+      <section class="admin-comments-section">
+        <h2>Коментарі до звітів</h2>
+        <div id="adminCommentsList">
+          <p class="posts-message">Завантаження коментарів...</p>
+        </div>
+      </section>
     </div>
 
     <div id="editModal">

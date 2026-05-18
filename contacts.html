@@ -99,12 +99,9 @@
             this.reset();
           } catch (err) {
             console.error(err);
-            let messages =
-              JSON.parse(localStorage.getItem("contactMessages")) || [];
-            messages.push(newMessage);
-            localStorage.setItem("contactMessages", JSON.stringify(messages));
-            status.style.color = "orange";
-            status.innerText = "Збережено локально.";
+            status.style.color = "red";
+            status.innerText =
+              "Не вдалося надіслати повідомлення. Спробуйте пізніше.";
           }
         });
     </script>

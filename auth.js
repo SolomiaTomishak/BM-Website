@@ -1,54 +1,49 @@
-const users = [
-  {
-    id: "u1",
-    name: "Адмін",
-    email: "email@example.com",
-    password: "пароль",
-    role: "admin",
-  },
-  {
-    id: "u2",
-    name: "Користувач",
-    email: "user@example.com",
-    password: "123",
-    role: "user",
-  },
-];
-
 document.addEventListener("DOMContentLoaded", () => {
   const loginForm = document.getElementById("loginForm");
 
-  if (loginForm) {
-    loginForm.addEventListener("submit", (e) => {
-      e.preventDefault();
+  if (!loginForm) return;
 
-      const emailInput = document.getElementById("email").value.trim();
-      const passInput = document.getElementById("password").value.trim();
-      const errorMsg = document.getElementById("errorMsg");
+  loginForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-      if (errorMsg) errorMsg.style.display = "none";
+    const emailInput = document.getElementById("email").value.trim();
+    const passInput = document.getElementById("password").value.trim();
+    const errorMsg = document.getElementById("errorMsg");
+    const submitButton = loginForm.querySelector("button");
 
-      // Пошук користувача у масиві
-      const user = users.find(
-        (u) => u.email === emailInput && u.password === passInput,
-      );
+    if (errorMsg) {
+      errorMsg.style.display = "none";
+      errorMsg.innerText = "";
+    }
 
-      if (user) {
-        // Зберігаємо дані в localStorage
-        localStorage.setItem("currentUser", JSON.stringify(user));
+    submitButton.disabled = true;
+    submitButton.innerText = "Вхід...";
 
-        // Перенаправлення залежно від ролі
-        if (user.role === "admin") {
-          window.location.href = "admin.html";
-        } else {
-          window.location.href = "index.html";
-        }
+    try {
+      const { error } = await window._supabase.auth.signInWithPassword({
+        email: emailInput,
+        password: passInput,
+      });
+
+      if (error) throw error;
+
+      const profile = await window.getCurrentProfile();
+
+      if (profile?.role === "admin") {
+        window.location.href = "admin.html";
       } else {
-        if (errorMsg) {
-          errorMsg.style.display = "block";
-          errorMsg.innerText = "Невірний email або пароль!";
-        }
+        window.location.href = "index.html";
       }
-    });
-  }
+    } catch (error) {
+      console.error("Помилка входу:", error);
+
+      if (errorMsg) {
+        errorMsg.style.display = "block";
+        errorMsg.innerText = "Невірний email або пароль.";
+      }
+    } finally {
+      submitButton.disabled = false;
+      submitButton.innerText = "Увійти";
+    }
+  });
 });

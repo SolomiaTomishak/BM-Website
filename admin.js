@@ -1,10 +1,13 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const user = JSON.parse(localStorage.getItem("currentUser"));
+document.addEventListener("DOMContentLoaded", async () => {
+  const user = await window.getCurrentProfile();
+
   if (!user || user.role !== "admin") {
     window.location.href = "login.html";
     return;
   }
+
   loadAdminPosts();
+  loadAdminComments();
 });
 
 async function loadAdminPosts() {
@@ -39,8 +42,122 @@ async function loadAdminPosts() {
   });
 }
 
+async function loadAdminComments() {
+  const commentsContainer = document.getElementById("adminCommentsList");
+  if (!commentsContainer) return;
+
+  commentsContainer.innerHTML =
+    '<p class="posts-message">Завантаження коментарів...</p>';
+
+  try {
+    const [{ data: comments, error: commentsError }, { data: posts }] =
+      await Promise.all([
+        _supabase
+          .from("comments")
+          .select("*")
+          .order("created_at", { ascending: false }),
+        _supabase.from("posts").select("id,title"),
+      ]);
+
+    if (commentsError) throw commentsError;
+
+    renderAdminComments(comments || [], posts || []);
+  } catch (error) {
+    console.error("Помилка отримання коментарів:", error);
+    commentsContainer.innerHTML =
+      '<p class="posts-message posts-error">Не вдалося завантажити коментарі. Перевірте таблицю comments у Supabase.</p>';
+  }
+}
+
+function renderAdminComments(comments, posts) {
+  const commentsContainer = document.getElementById("adminCommentsList");
+  if (!commentsContainer) return;
+
+  commentsContainer.innerHTML = "";
+
+  if (comments.length === 0) {
+    commentsContainer.innerHTML =
+      '<p class="posts-message">Коментарів ще немає.</p>';
+    return;
+  }
+
+  const postTitleById = new Map(
+    posts.map((post) => [String(post.id), post.title || "Без назви"]),
+  );
+
+  comments.forEach((comment) => {
+    const div = document.createElement("div");
+    div.className = "admin-comment-card";
+
+    const info = document.createElement("div");
+    info.className = "admin-comment-info";
+
+    const meta = document.createElement("p");
+    meta.className = "admin-comment-meta";
+    meta.textContent = `${comment.author || "Гість"} - ${formatDate(comment.created_at)}`;
+
+    const postTitle = document.createElement("h4");
+    postTitle.textContent =
+      postTitleById.get(String(comment.post_id)) || `Звіт #${comment.post_id}`;
+
+    const text = document.createElement("p");
+    text.textContent = comment.text || "";
+
+    const actions = document.createElement("div");
+    actions.className = "admin-actions";
+
+    const openButton = document.createElement("button");
+    openButton.className = "edit-btn";
+    openButton.type = "button";
+    openButton.textContent = "Відкрити звіт";
+    openButton.addEventListener("click", () => {
+      window.location.href = `post.html?id=${encodeURIComponent(comment.post_id)}`;
+    });
+
+    const deleteButton = document.createElement("button");
+    deleteButton.className = "delete-btn";
+    deleteButton.type = "button";
+    deleteButton.textContent = "Видалити";
+    deleteButton.addEventListener("click", () => deleteComment(comment.id));
+
+    info.append(meta, postTitle, text);
+    actions.append(openButton, deleteButton);
+    div.append(info, actions);
+    commentsContainer.appendChild(div);
+  });
+}
+
 const addPostForm = document.getElementById("addPostForm");
 const submitBtn = document.getElementById("submitBtn");
+const postFileInput = document.getElementById("postFile");
+const postImagePreview = document.getElementById("postImagePreview");
+
+if (postFileInput && postImagePreview) {
+  postFileInput.addEventListener("change", async () => {
+    const file = postFileInput.files[0];
+    const previewImage = postImagePreview.querySelector("img");
+
+    postImagePreview.hidden = true;
+    previewImage.removeAttribute("src");
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("Будь ласка, оберіть саме зображення.");
+      postFileInput.value = "";
+      return;
+    }
+
+    try {
+      previewImage.src = await fileToCompressedDataUrl(file);
+      postImagePreview.hidden = false;
+    } catch (error) {
+      console.error("Помилка попереднього перегляду:", error);
+      alert("Не вдалося відкрити це фото.");
+      postFileInput.value = "";
+    }
+  });
+}
 
 if (addPostForm) {
   addPostForm.addEventListener("submit", async (e) => {
@@ -58,30 +175,13 @@ if (addPostForm) {
     submitBtn.innerText = "Завантаження...";
 
     try {
-      // ФІКС ПОМИЛКИ: Очищаємо ім'я файлу від зайвих крапок та пробілів
-      const fileExt = file.name.split(".").pop();
-      const fileName = `img_${Date.now()}.${fileExt}`;
+      const imageDataUrl = await fileToCompressedDataUrl(file);
 
-      // Завантажуємо файл ПРЯМО в корінь бакета 'posts' без папок
-      let { error: uploadError } = await _supabase.storage
-        .from("posts")
-        .upload(fileName, file);
-
-      if (uploadError) throw uploadError;
-
-      // Отримання публічного посилання
-      const { data: urlData } = _supabase.storage
-        .from("posts")
-        .getPublicUrl(fileName);
-
-      const imageUrl = urlData.publicUrl;
-
-      // Запис у таблицю posts
       const newPost = {
         title: document.getElementById("postTitle").value,
         category: document.getElementById("postCategory").value,
         description: document.getElementById("postDesc").value,
-        image: imageUrl,
+        image_path: imageDataUrl,
       };
 
       const { error: insertError } = await _supabase
@@ -92,9 +192,9 @@ if (addPostForm) {
 
       alert("Звіт успішно опубліковано!");
       addPostForm.reset();
+      if (postImagePreview) postImagePreview.hidden = true;
       loadAdminPosts();
     } catch (error) {
-      // Якщо помилка каже "Duplicate", значить файл з таким ім'ям вже є
       alert("Помилка: " + error.message);
       console.error(error);
     } finally {
@@ -104,12 +204,59 @@ if (addPostForm) {
   });
 }
 
+function fileToCompressedDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const image = new Image();
+
+      image.onload = () => {
+        const maxWidth = 1400;
+        const maxHeight = 1000;
+        const scale = Math.min(
+          1,
+          maxWidth / image.width,
+          maxHeight / image.height,
+        );
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+
+        canvas.width = Math.round(image.width * scale);
+        canvas.height = Math.round(image.height * scale);
+
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL("image/jpeg", 0.82));
+      };
+
+      image.onerror = () => reject(new Error("Не вдалося прочитати фото."));
+      image.src = reader.result;
+    };
+
+    reader.onerror = () => reject(new Error("Не вдалося прочитати файл."));
+    reader.readAsDataURL(file);
+  });
+}
+
 async function deletePost(id) {
   if (confirm("Ви впевнені, що хочете видалити цей пост?")) {
     const { error } = await _supabase.from("posts").delete().eq("id", id);
     if (error) alert(error.message);
     else loadAdminPosts();
   }
+}
+
+async function deleteComment(id) {
+  if (!confirm("Видалити цей коментар?")) return;
+
+  const { error } = await _supabase.from("comments").delete().eq("id", id);
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  loadAdminComments();
 }
 
 function openEditModal(post) {
@@ -146,5 +293,17 @@ if (editPostForm) {
       closeModal();
       loadAdminPosts();
     }
+  });
+}
+
+function formatDate(value) {
+  if (!value) return "";
+
+  return new Date(value).toLocaleString("uk-UA", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 }
