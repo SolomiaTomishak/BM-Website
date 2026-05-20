@@ -106,6 +106,9 @@ function renderPosts(posts) {
     const description = post.description || "";
 
     card.className = "post-card";
+    card.dataset.title = normalizeFilterText(title);
+    card.dataset.category = normalizeFilterText(category);
+    card.dataset.description = normalizeFilterText(description);
     card.tabIndex = 0;
     card.setAttribute("role", "link");
     card.setAttribute("aria-label", `Відкрити звіт: ${title}`);
@@ -259,26 +262,71 @@ function setupImageFallbacks(container) {
 
 function setupSearch() {
   const searchBar = document.getElementById("searchBar");
+  const searchContainer = document.querySelector(".search-container");
+  const filterButtons = document.querySelectorAll(".category-filter");
   if (!searchBar) return;
 
-  searchBar.addEventListener("input", (event) => {
-    const query = event.target.value.trim().toLowerCase();
+  let selectedCategory = "";
+
+  const applyFilters = () => {
+    const query = normalizeFilterText(searchBar.value);
     const cards = document.querySelectorAll(".post-card");
+    let visibleCount = 0;
 
     cards.forEach((card) => {
-      const title = card.querySelector("h3")?.innerText.toLowerCase() || "";
-      const category =
-        card.querySelector("strong")?.innerText.toLowerCase() || "";
-      const description =
-        card
-          .querySelector(".post-info p:last-child")
-          ?.innerText.toLowerCase() || "";
-      const isVisible =
-        title.includes(query) ||
-        category.includes(query) ||
-        description.includes(query);
+      const title = card.dataset.title || "";
+      const category = card.dataset.category || "";
+      const description = card.dataset.description || "";
+      const matchesQuery =
+        !query || title.includes(query) || description.includes(query);
+      const matchesCategory =
+        !selectedCategory || category === selectedCategory;
+      const isVisible = matchesQuery && matchesCategory;
 
       card.style.display = isVisible ? "block" : "none";
+      if (isVisible) visibleCount += 1;
+    });
+
+    renderNoResultsMessage(visibleCount, Boolean(query || selectedCategory));
+  };
+
+  searchBar.addEventListener("focus", () => {
+    searchContainer?.classList.add("filters-open");
+  });
+
+  searchBar.addEventListener("input", applyFilters);
+
+  filterButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      selectedCategory = normalizeFilterText(button.dataset.category || "");
+
+      filterButtons.forEach((item) => item.classList.remove("active"));
+      button.classList.add("active");
+      searchContainer?.classList.add("filters-open");
+      applyFilters();
     });
   });
+}
+
+function normalizeFilterText(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function renderNoResultsMessage(visibleCount, isFiltering) {
+  const container = document.getElementById("postsContainer");
+  if (!container) return;
+
+  const existingMessage = container.querySelector(".posts-no-results");
+
+  if (visibleCount > 0 || !isFiltering) {
+    existingMessage?.remove();
+    return;
+  }
+
+  if (existingMessage) return;
+
+  const message = document.createElement("p");
+  message.className = "posts-message posts-no-results";
+  message.textContent = "За цим пошуком або фільтром публікацій немає.";
+  container.appendChild(message);
 }

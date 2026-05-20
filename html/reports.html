@@ -49,10 +49,31 @@
       <input
         type="text"
         id="searchBar"
-        placeholder="Пошук публікацій за назвою чи описом..."
+        placeholder="Пошук публікацій за назвою..."
+        aria-controls="categoryFilters"
       />
+      <div class="category-filters" id="categoryFilters" aria-label="Фільтри категорій">
+        <button type="button" class="category-filter active" data-category="">
+          Усі
+        </button>
+        <button type="button" class="category-filter" data-category="заходи">
+          Заходи
+        </button>
+        <button type="button" class="category-filter" data-category="волонтерство">
+          Волонтерство
+        </button>
+        <button type="button" class="category-filter" data-category="наша діяльність">
+          Наша діяльність
+        </button>
+        <button type="button" class="category-filter" data-category="оголошення">
+          Оголошення
+        </button>
+      </div>
     </div>
     <div class="posts-grid" id="postsContainer"></div>
+
+    <footer id="site-footer"></footer>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/common.js"></script>
     <script src="../js/posts.js"></script>

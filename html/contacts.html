@@ -69,6 +69,8 @@
       <div id="form-status"></div>
     </div>
 
+    <footer id="site-footer"></footer>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/common.js"></script>
 
@@ -78,18 +80,32 @@
         .addEventListener("submit", async function (e) {
           e.preventDefault();
 
+          const status = document.getElementById("form-status");
+          const submitButton = this.querySelector("button");
+          const name = document.getElementById("name").value.trim();
+          const email = document.getElementById("email").value.trim();
+          const message = document.getElementById("message").value.trim();
+
+          if (!name || !email || !message) {
+            status.style.color = "red";
+            status.innerText = "Будь ласка, заповніть усі поля.";
+            return;
+          }
+
           const newMessage = {
-            name: document.getElementById("name").value,
-            email: document.getElementById("email").value,
-            message: document.getElementById("message").value,
-            date: new Date().toLocaleString(),
+            name,
+            email,
+            message,
           };
 
-          const status = document.getElementById("form-status");
+          submitButton.disabled = true;
+          submitButton.innerText = "Надсилаємо...";
+          status.style.color = "#62677b";
+          status.innerText = "Надсилаємо повідомлення...";
 
           try {
-            const { error } = await _supabase
-              .from("contactMessages")
+            const { error } = await window._supabase
+              .from("contact_messages")
               .insert([newMessage]);
 
             if (error) throw error;
@@ -102,6 +118,9 @@
             status.style.color = "red";
             status.innerText =
               "Не вдалося надіслати повідомлення. Спробуйте пізніше.";
+          } finally {
+            submitButton.disabled = false;
+            submitButton.innerText = "Надіслати повідомлення";
           }
         });
     </script>

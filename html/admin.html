@@ -136,9 +136,16 @@
           <input
             type="text"
             id="postCategory"
+            list="postCategories"
             placeholder="Категорія (напр. Волонтерство)"
             required
           />
+          <datalist id="postCategories">
+            <option value="Заходи"></option>
+            <option value="Волонтерство"></option>
+            <option value="Наша діяльність"></option>
+            <option value="Оголошення"></option>
+          </datalist>
           <textarea
             id="postDesc"
             placeholder="Опис проєкту або новини..."
@@ -174,6 +181,13 @@
         <h2>Коментарі до звітів</h2>
         <div id="adminCommentsList">
           <p class="posts-message">Завантаження коментарів...</p>
+        </div>
+      </section>
+
+      <section class="admin-comments-section">
+        <h2>Повідомлення з контактів</h2>
+        <div id="adminContactMessagesList">
+          <p class="posts-message">Завантаження повідомлень...</p>
         </div>
       </section>
     </div>
@@ -217,4 +231,3 @@
     <script src="../js/admin.js"></script>
   </body>
 </html>
-

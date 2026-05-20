@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   loadAdminPosts();
   loadAdminComments();
+  loadAdminContactMessages();
 });
 
 async function loadAdminPosts() {
@@ -124,6 +125,85 @@ function renderAdminComments(comments, posts) {
     actions.append(openButton, deleteButton);
     div.append(info, actions);
     commentsContainer.appendChild(div);
+  });
+}
+
+async function loadAdminContactMessages() {
+  const messagesContainer = document.getElementById(
+    "adminContactMessagesList",
+  );
+  if (!messagesContainer) return;
+
+  messagesContainer.innerHTML =
+    '<p class="posts-message">Завантаження повідомлень...</p>';
+
+  try {
+    const { data: messages, error } = await window._supabase
+      .from("contact_messages")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    renderAdminContactMessages(messages || []);
+  } catch (error) {
+    console.error("Помилка отримання контактних повідомлень:", error);
+    messagesContainer.innerHTML =
+      '<p class="posts-message posts-error">Не вдалося завантажити повідомлення. Перевірте таблицю contact_messages у Supabase.</p>';
+  }
+}
+
+function renderAdminContactMessages(messages) {
+  const messagesContainer = document.getElementById(
+    "adminContactMessagesList",
+  );
+  if (!messagesContainer) return;
+
+  messagesContainer.innerHTML = "";
+
+  if (messages.length === 0) {
+    messagesContainer.innerHTML =
+      '<p class="posts-message">Повідомлень ще немає.</p>';
+    return;
+  }
+
+  messages.forEach((message) => {
+    const div = document.createElement("div");
+    div.className = "admin-comment-card";
+
+    const info = document.createElement("div");
+    info.className = "admin-comment-info";
+
+    const meta = document.createElement("p");
+    meta.className = "admin-comment-meta";
+    meta.textContent = formatDate(message.created_at);
+
+    const sender = document.createElement("h4");
+    sender.textContent = message.name || "Без імені";
+
+    const email = document.createElement("a");
+    email.className = "admin-contact-email";
+    email.href = `mailto:${message.email || ""}`;
+    email.textContent = message.email || "Email не вказано";
+
+    const text = document.createElement("p");
+    text.textContent = message.message || "";
+
+    const actions = document.createElement("div");
+    actions.className = "admin-actions";
+
+    const deleteButton = document.createElement("button");
+    deleteButton.className = "delete-btn";
+    deleteButton.type = "button";
+    deleteButton.textContent = "Видалити";
+    deleteButton.addEventListener("click", () =>
+      deleteContactMessage(message.id),
+    );
+
+    info.append(meta, sender, email, text);
+    actions.append(deleteButton);
+    div.append(info, actions);
+    messagesContainer.appendChild(div);
   });
 }
 
@@ -326,6 +406,22 @@ async function deleteComment(id) {
   }
 
   loadAdminComments();
+}
+
+async function deleteContactMessage(id) {
+  if (!confirm("Видалити це повідомлення?")) return;
+
+  const { error } = await window._supabase
+    .from("contact_messages")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  loadAdminContactMessages();
 }
 
 function openEditModal(post) {
