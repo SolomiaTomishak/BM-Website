@@ -19,7 +19,7 @@ async function loadPosts() {
     renderPosts(posts);
   } catch (error) {
     console.error("Помилка Supabase:", error);
-    loadLocalPosts(error);
+    container.innerHTML = `<p class="posts-message posts-error">Не вдалося завантажити звіти. Supabase: ${error.message}</p>`;
   }
 }
 
@@ -61,25 +61,6 @@ async function getPostsFromSupabase() {
     throw error;
   } finally {
     clearTimeout(timeoutId);
-  }
-}
-
-async function loadLocalPosts(originalError) {
-  const container = document.getElementById("postsContainer");
-  if (!container) return;
-
-  try {
-    const response = await fetch("./data/postss.json");
-
-    if (!response.ok) {
-      throw new Error("Локальний файл зі звітами не знайдено.");
-    }
-
-    const posts = await response.json();
-    renderPosts(posts);
-  } catch (fallbackError) {
-    console.error("Помилка локального резервного завантаження:", fallbackError);
-    container.innerHTML = `<p class="posts-message posts-error">Не вдалося завантажити звіти. Supabase: ${originalError.message}</p>`;
   }
 }
 
