@@ -14,7 +14,7 @@ async function loadAdminPosts() {
   const listContainer = document.getElementById("adminPostsList");
   if (!listContainer) return;
 
-  const { data: posts, error } = await _supabase
+  const { data: posts, error } = await window._supabase
     .from("posts")
     .select("*")
     .order("id", { ascending: false });
@@ -52,11 +52,11 @@ async function loadAdminComments() {
   try {
     const [{ data: comments, error: commentsError }, { data: posts }] =
       await Promise.all([
-        _supabase
+        window._supabase
           .from("comments")
           .select("*")
           .order("created_at", { ascending: false }),
-        _supabase.from("posts").select("id,title"),
+        window._supabase.from("posts").select("id,title"),
       ]);
 
     if (commentsError) throw commentsError;
@@ -131,31 +131,51 @@ const addPostForm = document.getElementById("addPostForm");
 const submitBtn = document.getElementById("submitBtn");
 const postFileInput = document.getElementById("postFile");
 const postImagePreview = document.getElementById("postImagePreview");
+const clearPostImageBtn = document.getElementById("clearPostImageBtn");
+
+function clearSelectedPostImage() {
+  if (postFileInput) postFileInput.value = "";
+  if (postImagePreview) {
+    const previewImage = postImagePreview.querySelector("img");
+    postImagePreview.hidden = true;
+    if (previewImage) previewImage.removeAttribute("src");
+  }
+  if (clearPostImageBtn) clearPostImageBtn.hidden = true;
+}
 
 if (postFileInput && postImagePreview) {
   postFileInput.addEventListener("change", async () => {
     const file = postFileInput.files[0];
     const previewImage = postImagePreview.querySelector("img");
 
-    postImagePreview.hidden = true;
-    previewImage.removeAttribute("src");
-
-    if (!file) return;
+    if (!file) {
+      clearSelectedPostImage();
+      return;
+    }
 
     if (!file.type.startsWith("image/")) {
       alert("Будь ласка, оберіть саме зображення.");
       postFileInput.value = "";
+      clearSelectedPostImage();
       return;
     }
 
     try {
       previewImage.src = await fileToCompressedDataUrl(file);
       postImagePreview.hidden = false;
+      if (clearPostImageBtn) clearPostImageBtn.hidden = false;
     } catch (error) {
       console.error("Помилка попереднього перегляду:", error);
       alert("Не вдалося відкрити це фото.");
       postFileInput.value = "";
+      clearSelectedPostImage();
     }
+  });
+}
+
+if (clearPostImageBtn) {
+  clearPostImageBtn.addEventListener("click", () => {
+    clearSelectedPostImage();
   });
 }
 
@@ -172,19 +192,21 @@ if (addPostForm) {
     }
 
     submitBtn.disabled = true;
-    submitBtn.innerText = "Завантаження...";
+    submitBtn.innerText = "Завантаження фото...";
 
     try {
-      const imageDataUrl = await fileToCompressedDataUrl(file);
+      const imageUrl = await uploadPostImage(file);
 
       const newPost = {
         title: document.getElementById("postTitle").value,
         category: document.getElementById("postCategory").value,
         description: document.getElementById("postDesc").value,
-        image_path: imageDataUrl,
+        image_path: imageUrl,
       };
 
-      const { error: insertError } = await _supabase
+      submitBtn.innerText = "Публікація...";
+
+      const { error: insertError } = await window._supabase
         .from("posts")
         .insert([newPost]);
 
@@ -192,7 +214,7 @@ if (addPostForm) {
 
       alert("Звіт успішно опубліковано!");
       addPostForm.reset();
-      if (postImagePreview) postImagePreview.hidden = true;
+      clearSelectedPostImage();
       loadAdminPosts();
     } catch (error) {
       alert("Помилка: " + error.message);
@@ -202,6 +224,47 @@ if (addPostForm) {
       submitBtn.innerText = "Опублікувати";
     }
   });
+}
+
+async function uploadPostImage(file) {
+  const imageDataUrl = await fileToCompressedDataUrl(file);
+  const imageBlob = await dataUrlToBlob(imageDataUrl);
+  const filePath = `posts/${Date.now()}-${createSafeFileName(file.name)}`;
+
+  const { error: uploadError } = await window._supabase.storage
+    .from("post-images")
+    .upload(filePath, imageBlob, {
+      contentType: "image/jpeg",
+      upsert: false,
+    });
+
+  if (uploadError) throw uploadError;
+
+  const { data } = window._supabase.storage
+    .from("post-images")
+    .getPublicUrl(filePath);
+
+  if (!data?.publicUrl) {
+    throw new Error("Не вдалося отримати посилання на фото.");
+  }
+
+  return data.publicUrl;
+}
+
+async function dataUrlToBlob(dataUrl) {
+  const response = await fetch(dataUrl);
+  return response.blob();
+}
+
+function createSafeFileName(fileName) {
+  const nameWithoutExtension = fileName.replace(/\.[^/.]+$/, "");
+  const safeName =
+    nameWithoutExtension
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "image";
+
+  return `${safeName}.jpg`;
 }
 
 function fileToCompressedDataUrl(file) {
@@ -240,7 +303,10 @@ function fileToCompressedDataUrl(file) {
 
 async function deletePost(id) {
   if (confirm("Ви впевнені, що хочете видалити цей пост?")) {
-    const { error } = await _supabase.from("posts").delete().eq("id", id);
+    const { error } = await window._supabase
+      .from("posts")
+      .delete()
+      .eq("id", id);
     if (error) alert(error.message);
     else loadAdminPosts();
   }
@@ -249,7 +315,10 @@ async function deletePost(id) {
 async function deleteComment(id) {
   if (!confirm("Видалити цей коментар?")) return;
 
-  const { error } = await _supabase.from("comments").delete().eq("id", id);
+  const { error } = await window._supabase
+    .from("comments")
+    .delete()
+    .eq("id", id);
 
   if (error) {
     alert(error.message);
@@ -282,7 +351,7 @@ if (editPostForm) {
       description: document.getElementById("editDesc").value,
     };
 
-    const { error } = await _supabase
+    const { error } = await window._supabase
       .from("posts")
       .update(updatedPost)
       .eq("id", id);
@@ -307,3 +376,7 @@ function formatDate(value) {
     minute: "2-digit",
   });
 }
+
+window.deletePost = deletePost;
+window.openEditModal = openEditModal;
+window.closeModal = closeModal;

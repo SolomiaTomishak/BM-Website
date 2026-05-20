@@ -1,10 +1,10 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="uk">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Панель адміністратора - Березівська молодь</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="../css/styles.css" />
     <style>
       .admin-main {
         padding: 20px;
@@ -153,6 +153,14 @@
           <div class="admin-image-preview" id="postImagePreview" hidden>
             <img src="" alt="Попередній перегляд фото" />
           </div>
+          <button
+            type="button"
+            class="delete-btn"
+            id="clearPostImageBtn"
+            hidden
+          >
+            Видалити вибране фото
+          </button>
 
           <button type="submit" class="submit-btn" id="submitBtn">
             Опублікувати
@@ -205,7 +213,8 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="common.js"></script>
-    <script src="admin.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/admin.js"></script>
   </body>
 </html>
+

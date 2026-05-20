@@ -1,4 +1,4 @@
-const supabaseUrl = "https://mgjtvqqsrcrmouffuijo.supabase.co";
+﻿const supabaseUrl = "https://mgjtvqqsrcrmouffuijo.supabase.co";
 const supabaseKey = "sb_publishable_R0I13hnrS3pt2hyG97xA9A_sQzPSsVD";
 
 window.supabaseConfig = {
@@ -47,7 +47,7 @@ async function renderHeader() {
 
   header.innerHTML = `
         <div class="logo">
-            <img src="logo.png" alt="Лого">
+            <img src="../assets/logo.png" alt="Лого">
             <span>Березівська молодь</span>
         </div>
         <input type="checkbox" id="menu-toggle" class="menu-toggle">
@@ -74,3 +74,4 @@ async function logout() {
 window.logout = logout;
 
 document.addEventListener("DOMContentLoaded", renderHeader);
+

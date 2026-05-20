@@ -48,6 +48,7 @@ function renderSinglePost(post) {
     imageElement.src = image;
     imageElement.alt = title;
     imageWrap.appendChild(imageElement);
+    setupFullscreenImage(imageWrap, image, title);
   }
 
   const placeholder = document.createElement("div");
@@ -73,6 +74,61 @@ function renderSinglePost(post) {
   container.append(imageWrap, content);
 
   setupImageFallbacks(container);
+}
+
+function setupFullscreenImage(imageWrap, imageSrc, title) {
+  imageWrap.classList.add("is-openable");
+  imageWrap.setAttribute("role", "button");
+  imageWrap.setAttribute("tabindex", "0");
+  imageWrap.setAttribute("aria-label", "Відкрити фото на весь екран");
+
+  imageWrap.addEventListener("click", () => {
+    openImageLightbox(imageSrc, title);
+  });
+
+  imageWrap.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      openImageLightbox(imageSrc, title);
+    }
+  });
+}
+
+function openImageLightbox(imageSrc, title) {
+  const lightbox = document.createElement("div");
+  lightbox.className = "image-lightbox";
+  lightbox.setAttribute("role", "dialog");
+  lightbox.setAttribute("aria-modal", "true");
+  lightbox.setAttribute("aria-label", title || "Фото поста");
+
+  const closeButton = document.createElement("button");
+  closeButton.className = "image-lightbox-close";
+  closeButton.type = "button";
+  closeButton.setAttribute("aria-label", "Закрити фото");
+  closeButton.textContent = "×";
+
+  const image = document.createElement("img");
+  image.src = imageSrc;
+  image.alt = title || "Фото поста";
+
+  const closeLightbox = () => {
+    document.removeEventListener("keydown", handleEscape);
+    lightbox.remove();
+  };
+
+  function handleEscape(event) {
+    if (event.key === "Escape") closeLightbox();
+  }
+
+  closeButton.addEventListener("click", closeLightbox);
+  lightbox.addEventListener("click", (event) => {
+    if (event.target === lightbox) closeLightbox();
+  });
+  document.addEventListener("keydown", handleEscape);
+
+  lightbox.append(closeButton, image);
+  document.body.appendChild(lightbox);
+  closeButton.focus();
 }
 
 function showPostError(message) {

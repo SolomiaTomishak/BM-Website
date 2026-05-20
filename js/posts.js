@@ -53,7 +53,9 @@ async function getPostsFromSupabase() {
     return data;
   } catch (error) {
     if (error.name === "AbortError") {
-      throw new Error("Запит до Supabase тривав занадто довго.");
+      throw new Error("Запит до Supabase тривав занадто довго.", {
+        cause: error,
+      });
     }
 
     throw error;
