@@ -1,5 +1,6 @@
 ﻿const supabaseUrl = "https://mgjtvqqsrcrmouffuijo.supabase.co";
 const supabaseKey = "sb_publishable_R0I13hnrS3pt2hyG97xA9A_sQzPSsVD";
+const logoUrl = new URL("../assets/logo.png", import.meta.url).href;
 
 window.supabaseConfig = {
   url: supabaseUrl,
@@ -47,7 +48,7 @@ async function renderHeader() {
 
   header.innerHTML = `
         <div class="logo">
-            <img src="../assets/logo.png" alt="Лого">
+            <img src="${logoUrl}" alt="Лого">
             <span>Березівська молодь</span>
         </div>
         <input type="checkbox" id="menu-toggle" class="menu-toggle">
@@ -70,7 +71,7 @@ function renderFooter() {
   footer.innerHTML = `
         <div class="footer-inner">
             <div class="footer-brand">
-                <img src="../assets/logo.png" alt="Лого Березівської молоді">
+                <img src="${logoUrl}" alt="Лого Березівської молоді">
                 <div>
                     <strong>Березівська молодь</strong>
                     <p>Разом творимо активну громаду.</p>

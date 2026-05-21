@@ -14,6 +14,7 @@ const pages = [
 ];
 
 export default defineConfig({
+  base: "./",
   build: {
     rollupOptions: {
       input: Object.fromEntries(
