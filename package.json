@@ -4,10 +4,6 @@
   "description": "Frontend-only сайт громадської організації з публікаціями, контактами, авторизацією та адмін-панеллю на Supabase.",
   "main": "admin.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write ."
   },
@@ -23,14 +19,10 @@
     "url": "https://github.com/SolomiaTomishak/BM-Website/issues"
   },
   "homepage": "https://github.com/SolomiaTomishak/BM-Website#readme",
-  "dependencies": {
-    "@supabase/supabase-js": "^2.105.1"
-  },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "eslint": "^10.3.0",
     "globals": "^17.6.0",
-    "prettier": "^3.8.3",
-    "vite": "^8.0.11"
+    "prettier": "^3.8.3"
   }
 }

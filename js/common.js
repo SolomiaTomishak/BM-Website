@@ -1,6 +1,6 @@
 ﻿const supabaseUrl = "https://mgjtvqqsrcrmouffuijo.supabase.co";
 const supabaseKey = "sb_publishable_R0I13hnrS3pt2hyG97xA9A_sQzPSsVD";
-const logoUrl = new URL("../assets/logo.png", import.meta.url).href;
+const logoUrl = "../assets/logo.png";
 
 window.supabaseConfig = {
   url: supabaseUrl,

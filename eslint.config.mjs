@@ -6,7 +6,7 @@ export default [
     ignores: ["dist/**", "node_modules/**"],
   },
   {
-    files: ["*.config.mjs", "vite.config.mjs"],
+    files: ["*.config.mjs"],
     languageOptions: {
       globals: globals.node,
     },
@@ -16,7 +16,7 @@ export default [
     files: ["**/*.js"],
     languageOptions: {
       ecmaVersion: 2022,
-      sourceType: "module",
+      sourceType: "script",
       globals: globals.browser,
     },
     rules: {

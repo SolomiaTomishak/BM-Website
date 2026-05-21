@@ -11,7 +11,6 @@
 * JavaScript
 * Supabase
 * npm
-* Vite
 * ESLint
 * Prettier
 
@@ -89,8 +88,7 @@
 * CSS винесений у `css/styles.css`
 * JavaScript розділений за сторінками у `js/`
 * Supabase підключається через CDN `@supabase/supabase-js`
-* Vite використовується для dev server і production build
-* `vite.config.mjs` реєструє всі HTML-сторінки як build entry
+* Локальні скрипти підключаються як звичайні `<script>`, тому сторінки можна відкривати напряму з папки `html/`
 
 ### Дані
 
@@ -135,7 +133,6 @@
 README.md
 package.json
 package-lock.json
-vite.config.mjs
 eslint.config.mjs
 ```
 
@@ -143,57 +140,21 @@ eslint.config.mjs
 
 ## Запуск локально
 
-Встановити залежності:
-
-```bash
-npm install
-```
-
-Запустити dev server:
-
-```bash
-npm run dev
-```
-
-Відкрити сайт:
+Відкрити файл:
 
 ```text
-http://127.0.0.1:5173/html/index.html
+html/index.html
 ```
 
 Інші сторінки:
 
 ```text
-http://127.0.0.1:5173/html/reports.html
-http://127.0.0.1:5173/html/contacts.html
-http://127.0.0.1:5173/html/login.html
+html/reports.html
+html/contacts.html
+html/login.html
 ```
 
-Не відкривай сторінки через `file://`, бо авторизація, Supabase-запити і частина browser API можуть працювати некоректно.
-
----
-
-## Production build
-
-Зібрати сайт:
-
-```bash
-npm run build
-```
-
-Результат буде у папці `dist/`.
-
-Перевірити production build локально:
-
-```bash
-npm run preview
-```
-
-Після запуску preview відкрий:
-
-```text
-http://127.0.0.1:4173/html/index.html
-```
+Для форматування або перевірки коду можна встановити dev-залежності через `npm install`, але для перегляду сайту це не потрібно.
 
 ---
 
@@ -201,13 +162,9 @@ http://127.0.0.1:4173/html/index.html
 
 | Команда | Призначення |
 |---|---|
-| `npm install` | встановити залежності |
-| `npm run dev` | запустити Vite dev server |
-| `npm run build` | зібрати production-версію у `dist/` |
-| `npm run preview` | переглянути production build локально |
+| `npm install` | встановити залежності для tooling |
 | `npm run lint` | перевірити JavaScript через ESLint |
 | `npm run format` | форматувати файли через Prettier |
-| `npm test` | зараз є placeholder і тестів ще немає |
 
 ---
 
@@ -321,7 +278,7 @@ post-images
 * авторизації через Supabase Auth
 * простого role-based UI
 * організації multi-page frontend-проєкту
-* базового tooling через npm, Vite, ESLint і Prettier
+* базового tooling через npm, ESLint і Prettier
 
 ---
 
